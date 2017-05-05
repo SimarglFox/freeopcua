@@ -36,6 +36,12 @@ namespace OpcUa
   {
   }
 
+  UaServer::UaServer(bool debug, std::uint32_t bufferSize)
+      : Debug(debug)
+      , BuffSize(bufferSize)
+  {
+  }
+
   void UaServer::SetEndpoint(const std::string& endpoint)
   {
 	  Endpoint = endpoint;
@@ -106,6 +112,7 @@ namespace OpcUa
 
     OpcUa::Server::Parameters params;
     params.Debug = Debug;
+    params.buffsize = BuffSize;
     params.Endpoint.Server = appDesc;
     params.Endpoint.EndpointUrl = Endpoint;
     params.Endpoint.SecurityMode = SecurityMode;

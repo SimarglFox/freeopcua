@@ -39,6 +39,7 @@ namespace OpcUa
       EndpointDescription Endpoint;
       unsigned ThreadsCount = 1;
       bool Debug = false;
+      std::uint32_t buffsize = 8912;
     };
 
     /// @brief parameters of server.

@@ -82,7 +82,7 @@ namespace
     DEFINE_CLASS_POINTERS(OpcTcpConnection)
 
   public:
-    OpcTcpConnection(tcp::socket socket, OpcTcpServer& tcpServer, Services::SharedPtr uaServer, bool debug);
+    OpcTcpConnection(tcp::socket socket, OpcTcpServer& tcpServer, Services::SharedPtr uaServer, bool debug, uint32_t buffsize);
     ~OpcTcpConnection();
 
     void Start();
@@ -114,13 +114,13 @@ namespace
     std::vector<char> Buffer;
   };
 
-  OpcTcpConnection::OpcTcpConnection(tcp::socket socket, OpcTcpServer& tcpServer, Services::SharedPtr uaServer, bool debug)
+  OpcTcpConnection::OpcTcpConnection(tcp::socket socket, OpcTcpServer& tcpServer, Services::SharedPtr uaServer, bool debug, uint32_t buffsize)
     : Socket(std::move(socket))
     , TcpServer(tcpServer)
     , MessageProcessor(uaServer, *this, debug)
     , OStream(*this)
     , Debug(debug)
-    , Buffer(8192)
+    , Buffer(buffsize)
   {
   }
 
@@ -321,7 +321,7 @@ namespace
         if (!errorCode)
         {
           std::cout << "opc_tcp_async| Accepted new client connection." << std::endl;
-          std::shared_ptr<OpcTcpConnection> connection = std::make_shared<OpcTcpConnection>(std::move(socket), *this, Server, Params.DebugMode);
+          std::shared_ptr<OpcTcpConnection> connection = std::make_shared<OpcTcpConnection>(std::move(socket), *this, Server, Params.DebugMode, Params.buffSize);
           Clients.insert(connection);
           connection->Start();
         }

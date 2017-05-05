@@ -109,6 +109,7 @@ namespace
   Common::AddonParameters CreateAddonsParameters(const OpcUa::Server::Parameters& serverParams)
   {
     Common::Parameter debugMode("debug", std::to_string(serverParams.Debug));
+    Common::Parameter buffSize("buffSize", std::to_string(serverParams.buffsize));
 
     Common::AddonParameters addons;
 
@@ -131,6 +132,7 @@ namespace
 
     Common::ParametersGroup opc_tcp(OpcUa::Server::AsyncOpcTcpAddonId);
     opc_tcp.Parameters.push_back(debugMode);
+    opc_tcp.Parameters.push_back(buffSize);
     OpcUa::Server::ApplicationData applicationData;
     applicationData.Application = serverParams.Endpoint.Server;
     applicationData.Endpoints.push_back(serverParams.Endpoint);

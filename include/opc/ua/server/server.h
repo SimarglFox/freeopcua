@@ -22,6 +22,7 @@ namespace OpcUa
       // debug argument will make freeopcua write A LOT to stdout
       UaServer();
       explicit UaServer(bool debug);
+      UaServer(bool debug, std::uint32_t bufferSize);
 
       /// @brief set endpoint uri on wich server will listen.
       /// opc.tcp://localhost:4841/opcua/server
@@ -94,6 +95,7 @@ namespace OpcUa
       std::string ServerUri = "urn:freeopcua:server"; 
       std::string ProductUri = "urn:freeopcua.github.no:server";
       std::string Name = "FreeOpcUa Server";
+      std::uint32_t BuffSize;
       bool Debug = false;
       bool LoadCppAddressSpace = true;
       OpcUa::MessageSecurityMode SecurityMode = OpcUa::MessageSecurityMode::None;

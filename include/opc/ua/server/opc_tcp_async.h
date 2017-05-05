@@ -46,6 +46,7 @@ namespace OpcUa
         std::string Host;
         unsigned Port = 4840;
         bool DebugMode = false;
+        std::uint32_t buffSize = 8912;
       };
 
     public:

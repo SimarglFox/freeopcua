@@ -32,6 +32,8 @@ namespace OpcUa
       {
         if (param.Name == "debug")
           result.DebugMode = param.Value == "false" || param.Value == "0" ? false : true;
+        if (param.Name == "buffSize")
+          result.buffSize = std::stoi(param.Value);
       }
       return result;
     }
