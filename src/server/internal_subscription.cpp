@@ -357,8 +357,24 @@ namespace OpcUa
 
     void InternalSubscription::DataChangeCallback(const uint32_t& m_id, const DataValue& value)
     {
-      boost::unique_lock<boost::shared_mutex> lock(DbMutex);
-
+      boost::unique_lock<boost::shared_mutex> lock;//(DbMutex);
+      int countOfTry = 0;
+        while(true)
+        {
+            if(lock = boost::unique_lock<boost::shared_mutex>(DbMutex, boost::try_to_lock))
+            {
+                break;
+            }
+            else
+            {
+                countOfTry++;
+                if(countOfTry > 300)
+                {
+                    return;
+                }
+                std::this_thread::sleep_for(std::chrono::milliseconds(20));
+            }
+        }
       TriggeredDataChange event;
       MonitoredDataChangeMap::iterator it_monitoreditem = MonitoredDataChanges.find(m_id);
       if ( it_monitoreditem == MonitoredDataChanges.end()) 

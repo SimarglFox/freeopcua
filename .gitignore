@@ -70,3 +70,5 @@ python/cmake_*
 libopcua*
 cmake_*
 CPack*
+CMakeLists.txt.user
+*.cbp

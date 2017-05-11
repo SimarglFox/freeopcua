@@ -41,8 +41,8 @@ void RunServer()
 {
   //First setup our server
   const bool debug = true;
-  OpcUa::UaServer server(debug);
-  server.SetEndpoint("opc.tcp://localhost:4840/freeopcua/server");
+  OpcUa::UaServer server(debug, 100000);
+  server.SetEndpoint("opc.tcp://10.155.26.21:4840/freeopcua/server");
   server.SetServerURI("urn://exampleserver.freeopcua.github.io");
   server.Start();
   
@@ -58,7 +58,13 @@ void RunServer()
   Node newobject = objects.AddObject(nid, qn);
 
   //Add a variable and a property with auto-generated nodeid to our custom object
-  Node myvar = newobject.AddVariable(idx, "MyVariable", Variant(8));
+  std::vector<Node> vars;
+  for(unsigned int i = 0; i < 1000; i++)
+  {
+      std::string name = "MyVariable" + std::to_string(i);
+      Node myvar = newobject.AddVariable(idx, name, Variant(8));
+      vars.push_back(myvar);
+  }
   Node myprop = newobject.AddVariable(idx, "MyProperty", Variant(8.8));
   Node mymethod = newobject.AddMethod(idx, "MyMethod", MyMethod);
 
@@ -73,17 +79,17 @@ void RunServer()
 
 
   //Uncomment following to subscribe to datachange events inside server
-  /*
-  SubClient clt;
+  /*SubClient clt;
   std::unique_ptr<Subscription> sub = server.CreateSubscription(100, clt);
-  sub->SubscribeDataChange(myvar);
-  */
-
-
+  for(unsigned int i = 0; i < vars.size(); i++)
+  {
+      sub->SubscribeDataChange(vars.at(i));
+  }*/
+  //sub->SubscribeDataChange(myvar);
 
   //Now write values to address space and send events so clients can have some fun
   uint32_t counter = 0;
-  myvar.SetValue(Variant(counter)); //will change value and trigger datachange event
+  vars.at(0).SetValue(Variant(counter)); //will change value and trigger datachange event
 
   //Create event
   server.EnableEventNotification();
@@ -97,7 +103,10 @@ void RunServer()
   std::cout << "Ctrl-C to exit" << std::endl;
   for (;;)
   {
-    myvar.SetValue(Variant(++counter)); //will change value and trigger datachange event
+      for(unsigned int i = 0; i < vars.size(); i++)
+      {
+          vars.at(i).SetValue(Variant(++counter)); //will change value and trigger datachange event
+      }
     std::stringstream ss;
     ss << "This is event number: " << counter;
     ev.Message = LocalizedText(ss.str());
