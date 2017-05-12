@@ -357,37 +357,28 @@ namespace OpcUa
 
     void InternalSubscription::DataChangeCallback(const uint32_t& m_id, const DataValue& value)
     {
-      boost::unique_lock<boost::shared_mutex> lock;//(DbMutex);
-      int countOfTry = 0;
-        while(true)
-        {
-            if(lock = boost::unique_lock<boost::shared_mutex>(DbMutex, boost::try_to_lock))
-            {
-                break;
-            }
-            else
-            {
-                countOfTry++;
-                if(countOfTry > 300)
-                {
-                    return;
-                }
-                std::this_thread::sleep_for(std::chrono::milliseconds(20));
-            }
-        }
-      TriggeredDataChange event;
-      MonitoredDataChangeMap::iterator it_monitoreditem = MonitoredDataChanges.find(m_id);
-      if ( it_monitoreditem == MonitoredDataChanges.end()) 
-      {
-        std::cout << "InternalSubcsription | DataChangeCallback called for unknown item" << std::endl;
-        return ;
-      }
+      boost::unique_lock<boost::shared_mutex> lock(DbMutex,boost::chrono::milliseconds(10));
 
-      event.MonitoredItemId = it_monitoreditem->first;
-      event.Data.ClientHandle = it_monitoreditem->second.ClientHandle; 
-      event.Data.Value = value;
-      if (Debug) { std::cout << "InternalSubcsription | Enqueued DataChange triggered item for sub: " << Data.SubscriptionId << " and clienthandle: " << event.Data.ClientHandle << std::endl; }
-      TriggeredDataChangeEvents.push_back(event);
+      if (lock)
+      {
+          TriggeredDataChange event;
+          MonitoredDataChangeMap::iterator it_monitoreditem = MonitoredDataChanges.find(m_id);
+          if ( it_monitoreditem == MonitoredDataChanges.end())
+          {
+            std::cout << "InternalSubcsription | DataChangeCallback called for unknown item" << std::endl;
+            return ;
+          }
+
+          event.MonitoredItemId = it_monitoreditem->first;
+          event.Data.ClientHandle = it_monitoreditem->second.ClientHandle;
+          event.Data.Value = value;
+          if (Debug) { std::cout << "InternalSubcsription | Enqueued DataChange triggered item for sub: " << Data.SubscriptionId << " and clienthandle: " << event.Data.ClientHandle << std::endl; }
+          TriggeredDataChangeEvents.push_back(event);
+      }
+      else
+      {
+          std::cout << "InternalSubcsription | Enqueued DataChange : error: cannot access the mutex.";
+      }
     }
 
     void InternalSubscription::TriggerEvent(NodeId node, Event event)
