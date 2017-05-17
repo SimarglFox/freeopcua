@@ -52,6 +52,8 @@ namespace OpcUa
       , SessionId(GenerateSessionId())
       , SequenceNb(0)
     {
+
+      IOHandler = std::make_shared<IOHandlerBase>();
       std::cout << "opc_tcp_processor| Debug is " << Debug << std::endl;
       std::cout << "opc_tcp_processor| SessionId is " << Debug << std::endl;
     }
@@ -69,9 +71,9 @@ namespace OpcUa
         std::cerr << "Error during stopping OpcTcpMessages. " << exc.what() <<std::endl;
       }
     }
-    void OpcTcpMessages::SetHandler(const IOHandlerBase &handler)
+    void OpcTcpMessages::SetHandler(std::shared_ptr<IOHandlerBase> handler)
     {
-        ApiHandler = handler;
+        IOHandler = handler;
     }
 
     bool OpcTcpMessages::ProcessMessage(MessageType msgType, IStreamBinary& iStream)
@@ -377,7 +379,7 @@ namespace OpcUa
 
           for (OpcUa::WriteValue nodesToWrite : params.NodesToWrite)
           {
-              if(ApiHandler.BeforeAttributeWrite(SessionId.GetIntegerIdentifier(),
+              if (IOHandler->BeforeAttributeWrite(SessionId.GetIntegerIdentifier(),
                                                  nodesToWrite.NodeId,
                                                  nodesToWrite.AttributeId,
                                                  nodesToWrite.Value))

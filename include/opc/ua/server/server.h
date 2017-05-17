@@ -31,7 +31,7 @@ namespace OpcUa
       /// opc.tcp://server.freeopca.org:4841/opcua/server
       void SetEndpoint(const std::string& endpoint);
 
-      void SetHandler(const IOHandlerBase &handler);
+      void SetHandler(std::shared_ptr<IOHandlerBase> handler);
 
       /// @brief setup server description
       void SetProductURI(const std::string& uri);

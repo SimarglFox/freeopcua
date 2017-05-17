@@ -103,7 +103,9 @@ namespace
       // TODO lock manager
       EnsureAddonRegistered(id);
       EnsureAddonInitialized(id);
-      return Addons.find(id)->second.Addon;
+
+      AddonData addon = Addons.find(id)->second;
+      return addon.Addon;
     }
 
     virtual void Start()

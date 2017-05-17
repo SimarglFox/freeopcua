@@ -28,29 +28,18 @@
 #include <opc/ua/server/addons/services_registry.h>
 #include <opc/ua/server/opc_tcp_async.h>
 
+#include "opc_tcp_async_addon.h"
+
 #include <iostream>
 #include <vector>
 
-namespace
-{
-  using namespace OpcUa::Server;
+namespace OpcUa {
+namespace Server {
 
-  class AsyncOpcTcpAddon : public Common::Addon
-  {
-  public:
-    DEFINE_CLASS_POINTERS(AsyncOpcTcpAddon)
 
-  public:
-    virtual void Initialize(Common::AddonsManager& addons, const Common::AddonParameters& params) override;
-    virtual void Stop() override;
-
-  public:
-    void PublishApplicationsInformation(std::vector<OpcUa::ApplicationDescription> applications, std::vector<OpcUa::EndpointDescription> endpoints, const Common::AddonsManager& addons) const;
-
-  private:
-    AsyncOpcTcp::SharedPtr Endpoint;
-  };
-
+  AsyncOpcTcp::SharedPtr AsyncOpcTcpAddon::GetEndpoint() {
+      return Endpoint;
+  }
 
   void AsyncOpcTcpAddon::Initialize(Common::AddonsManager& addons, const Common::AddonParameters& addonParams)
   {
@@ -115,17 +104,10 @@ namespace
     Endpoint.reset();
   }
 
-}
-
-namespace OpcUa
-{
-  namespace Server
+  Common::Addon::UniquePtr AsyncOpcTcpAddonFactory::CreateAddon()
   {
-
-    Common::Addon::UniquePtr AsyncOpcTcpAddonFactory::CreateAddon()
-    {
-      return Common::Addon::UniquePtr(new AsyncOpcTcpAddon());
-    }
-
+    return Common::Addon::UniquePtr(new AsyncOpcTcpAddon());
   }
+
+}
 }

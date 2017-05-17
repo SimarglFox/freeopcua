@@ -28,7 +28,7 @@ namespace OpcUa
     public:
       OpcTcpMessages(std::shared_ptr<OpcUa::Services> computer, OpcUa::OutputChannel& outputChannel, bool debug);
       ~OpcTcpMessages();
-      void SetHandler(const IOHandlerBase &handler);
+      void SetHandler(std::shared_ptr<IOHandlerBase> handler);
 
       bool ProcessMessage(Binary::MessageType msgType, Binary::IStreamBinary& iStream);
 
@@ -43,7 +43,9 @@ namespace OpcUa
       void ForwardPublishResponse(const PublishResult response);
 
     private:
-      IOHandlerBase ApiHandler;
+      std::shared_ptr<IOHandlerBase> IOHandler;
+
+
       std::mutex ProcessMutex;
       std::shared_ptr<OpcUa::Services> Server;
       OpcUa::Binary::OStreamBinary OutputStream;

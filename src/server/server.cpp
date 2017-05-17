@@ -24,8 +24,9 @@
 #include <opc/ua/server/addons/opc_tcp_async.h>
 #include <opc/ua/server/addons/services_registry.h>
 #include <opc/ua/server/addons/subscription_service.h>
-#include <opc/ua/server/opc_tcp_async.h>
 #include <iostream>
+
+#include "opc_tcp_async_addon.h"
 
 namespace OpcUa
 {
@@ -64,10 +65,11 @@ namespace OpcUa
 	  Name = name;
   }
 
-  void UaServer::SetHandler(const IOHandlerBase &handler)
+  void UaServer::SetHandler(std::shared_ptr<IOHandlerBase> handler)
   {
-      auto asyncTCP = Addons->GetAddon<Server::AsyncOpcTcp>(Server::AsyncOpcTcpAddonId);
-      asyncTCP->SetHandler(handler);
+      Server::AsyncOpcTcpAddon::SharedPtr asyncTCP =
+              Addons->GetAddon<Server::AsyncOpcTcpAddon>(Server::AsyncOpcTcpAddonId);
+      asyncTCP->GetEndpoint()->SetHandler(handler);
   }
 
   void UaServer::AddAddressSpace(const std::string& path)

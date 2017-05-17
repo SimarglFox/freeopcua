@@ -101,7 +101,9 @@ namespace Common
   template <class AddonClass>
   typename std::shared_ptr<AddonClass> AddonsManager::GetAddon(const char id[]) const
   {
-    return std::dynamic_pointer_cast<AddonClass>(GetAddon(AddonId(id)));
+    auto addon = GetAddon(AddonId(id));
+    auto specific_addon = std::dynamic_pointer_cast<AddonClass>(addon);
+    return specific_addon;
   }
 
 

@@ -58,7 +58,7 @@ namespace
 
     virtual void Listen() override;
     virtual void Shutdown() override;
-    void SetHandler(const IOHandlerBase &handler);
+    void SetHandler(std::shared_ptr<IOHandlerBase> handler);
 
   private:
     void Accept();
@@ -71,6 +71,8 @@ namespace
     Parameters Params;
     Services::SharedPtr Server;
     std::set<std::shared_ptr<OpcTcpConnection>> Clients;
+
+    std::shared_ptr<IOHandlerBase> IOHandler;
 
     tcp::socket socket;
     tcp::acceptor acceptor;
@@ -92,7 +94,7 @@ namespace
     {
       Socket.close();
     }
-    void SetHandler(const IOHandlerBase &handler);
+    void SetHandler(std::shared_ptr<IOHandlerBase> handler);
 
   private:
     void ReadNextData();
@@ -129,7 +131,7 @@ namespace
   {
   }
 
-  void OpcTcpConnection::SetHandler(const IOHandlerBase &handler)
+  void OpcTcpConnection::SetHandler(std::shared_ptr<IOHandlerBase> handler)
   {
       MessageProcessor.SetHandler(handler);
   }
@@ -285,6 +287,8 @@ namespace
     , socket(ioService)
     , acceptor(ioService)
   {
+    IOHandler = std::make_shared<IOHandlerBase>();
+
     tcp::endpoint ep;
     if (params.Host.empty() )
     {
@@ -327,6 +331,8 @@ namespace
         {
           std::cout << "opc_tcp_async| Accepted new client connection." << std::endl;
           std::shared_ptr<OpcTcpConnection> connection = std::make_shared<OpcTcpConnection>(std::move(socket), *this, Server, Params.DebugMode, Params.buffSize);
+          connection->SetHandler(IOHandler);
+
           Clients.insert(connection);
           connection->Start();
         }
@@ -347,11 +353,13 @@ namespace
   {
     Clients.erase(client);
   }
-  void OpcTcpServer::SetHandler(const IOHandlerBase &handler)
+
+  void OpcTcpServer::SetHandler(std::shared_ptr<IOHandlerBase> handler)
   {
+      IOHandler = handler;
       for(auto client : Clients)
       {
-          client->SetHandler(handler);
+        client->SetHandler(IOHandler);
       }
   }
 

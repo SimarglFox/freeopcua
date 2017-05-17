@@ -37,10 +37,26 @@ std::vector<OpcUa::Variant> MyMethod(NodeId context, std::vector<OpcUa::Variant>
   return result;
 }
 
+class Handler : public IOHandlerBase {
+public:
+    Handler(const UaServer& server) : server(server) {}
+    virtual bool BeforeAttributeWrite(int32_t sessionId,
+            const OpcUa::NodeId& node,
+            OpcUa::AttributeId attribute_id,
+            const OpcUa::DataValue& data_value) override {
+
+        std::cout << "Write to " <<  server.GetNode(node).GetBrowseName().Name << std::endl;
+
+        return true;
+    }
+private:
+    const UaServer& server;
+};
+
 void RunServer()
 {
   //First setup our server
-  const bool debug = true;
+  const bool debug = false;
   OpcUa::UaServer server(debug, 100000);
   server.SetEndpoint("opc.tcp://10.155.26.21:4840/freeopcua/server");
   server.SetServerURI("urn://exampleserver.freeopcua.github.io");
@@ -79,9 +95,9 @@ void RunServer()
 
 
   //Uncomment following to subscribe to datachange events inside server
-  /*SubClient clt;
+  SubClient clt;
   std::unique_ptr<Subscription> sub = server.CreateSubscription(100, clt);
-  for(unsigned int i = 0; i < vars.size(); i++)
+  /* for(unsigned int i = 0; i < vars.size(); i++)
   {
       sub->SubscribeDataChange(vars.at(i));
   }*/
@@ -99,6 +115,9 @@ void RunServer()
   ev.SourceName = "Event from FreeOpcUA";
   ev.Time = DateTime::Current();
 
+
+  std::shared_ptr<Handler> handler = std::make_shared<Handler>(server);
+  server.SetHandler(handler);
 
   std::cout << "Ctrl-C to exit" << std::endl;
   for (;;)

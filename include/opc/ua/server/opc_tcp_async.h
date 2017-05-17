@@ -51,7 +51,7 @@ namespace OpcUa
       };
 
     public:
-      virtual void SetHandler(const IOHandlerBase &handler) = 0;
+      virtual void SetHandler(std::shared_ptr<IOHandlerBase> handler) = 0;
       virtual void Listen() = 0;
       virtual void Shutdown() = 0;
     };
