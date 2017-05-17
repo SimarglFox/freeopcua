@@ -58,6 +58,7 @@ namespace
 
     virtual void Listen() override;
     virtual void Shutdown() override;
+    void SetHandler(const IOHandlerBase &handler);
 
   private:
     void Accept();
@@ -91,7 +92,7 @@ namespace
     {
       Socket.close();
     }
-
+    void SetHandler(const IOHandlerBase &handler);
 
   private:
     void ReadNextData();
@@ -128,6 +129,10 @@ namespace
   {
   }
 
+  void OpcTcpConnection::SetHandler(const IOHandlerBase &handler)
+  {
+      MessageProcessor.SetHandler(handler);
+  }
   void OpcTcpConnection::Start()
   {
     ReadNextData();
@@ -341,6 +346,13 @@ namespace
   void OpcTcpServer::RemoveClient(OpcTcpConnection::SharedPtr client)
   {
     Clients.erase(client);
+  }
+  void OpcTcpServer::SetHandler(const IOHandlerBase &handler)
+  {
+      for(auto client : Clients)
+      {
+          client->SetHandler(handler);
+      }
   }
 
 } // namespace

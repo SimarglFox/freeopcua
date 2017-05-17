@@ -69,6 +69,10 @@ namespace OpcUa
         std::cerr << "Error during stopping OpcTcpMessages. " << exc.what() <<std::endl;
       }
     }
+    void OpcTcpMessages::SetHandler(const IOHandlerBase &handler)
+    {
+        ApiHandler = handler;
+    }
 
     bool OpcTcpMessages::ProcessMessage(MessageType msgType, IStreamBinary& iStream)
     {
@@ -369,12 +373,25 @@ namespace OpcUa
           WriteParameters params;
           istream >> params;
 
+          std::vector<OpcUa::WriteValue> writeVariables;
+
+          for (OpcUa::WriteValue nodesToWrite : params.NodesToWrite)
+          {
+              if(ApiHandler.BeforeAttributeWrite(SessionId.GetIntegerIdentifier(),
+                                                 nodesToWrite.NodeId,
+                                                 nodesToWrite.AttributeId,
+                                                 nodesToWrite.Value))
+              {
+                  writeVariables.push_back(nodesToWrite);
+              }
+          }
+
           WriteResponse response;
           FillResponseHeader(requestHeader, response.Header);
           std::vector<DataValue> values;
           if (std::shared_ptr<OpcUa::AttributeServices> service = Server->Attributes())
           {
-            response.Results = service->Write(params.NodesToWrite);
+            response.Results = service->Write(writeVariables);
           }
           else
           {

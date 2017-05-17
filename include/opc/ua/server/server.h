@@ -9,6 +9,7 @@
 #include <opc/ua/services/services.h>
 #include <opc/ua/subscription.h>
 #include <opc/ua/server_operations.h>
+#include <opc/ua/server/io_handler_base.h>
 
 namespace OpcUa
 {
@@ -29,6 +30,8 @@ namespace OpcUa
       /// opc.tcp://192.168.1.1:4840/opcua/server
       /// opc.tcp://server.freeopca.org:4841/opcua/server
       void SetEndpoint(const std::string& endpoint);
+
+      void SetHandler(const IOHandlerBase &handler);
 
       /// @brief setup server description
       void SetProductURI(const std::string& uri);

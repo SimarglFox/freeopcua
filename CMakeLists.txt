@@ -106,7 +106,7 @@ else(WIN32)
 
 endif(WIN32)
 
-find_package( Boost COMPONENTS system program_options filesystem thread REQUIRED )
+find_package( Boost COMPONENTS system program_options filesystem thread chrono REQUIRED )
 include_directories( ${Boost_INCLUDE_DIRS} )
 link_directories( ${Boost_LIBRARY_DIRS} )
 message(STATUS "Boost INCLUDE DIR IS: " ${Boost_INCLUDE_DIRS})

@@ -11,6 +11,7 @@
 #include <opc/ua/protocol/binary/common.h>
 #include <opc/ua/protocol/binary/stream.h>
 #include <opc/ua/services/services.h>
+#include <opc/ua/server/io_handler_base.h>
 
 #include <chrono>
 #include <list>
@@ -27,6 +28,7 @@ namespace OpcUa
     public:
       OpcTcpMessages(std::shared_ptr<OpcUa::Services> computer, OpcUa::OutputChannel& outputChannel, bool debug);
       ~OpcTcpMessages();
+      void SetHandler(const IOHandlerBase &handler);
 
       bool ProcessMessage(Binary::MessageType msgType, Binary::IStreamBinary& iStream);
 
@@ -41,6 +43,7 @@ namespace OpcUa
       void ForwardPublishResponse(const PublishResult response);
 
     private:
+      IOHandlerBase ApiHandler;
       std::mutex ProcessMutex;
       std::shared_ptr<OpcUa::Services> Server;
       OpcUa::Binary::OStreamBinary OutputStream;

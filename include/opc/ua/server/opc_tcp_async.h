@@ -21,6 +21,7 @@
 
 #include <opc/ua/services/services.h>
 #include <opc/common/interface.h>
+#include <opc/ua/server/io_handler_base.h>
 
 namespace boost
 {
@@ -50,6 +51,7 @@ namespace OpcUa
       };
 
     public:
+      virtual void SetHandler(const IOHandlerBase &handler) = 0;
       virtual void Listen() = 0;
       virtual void Shutdown() = 0;
     };
