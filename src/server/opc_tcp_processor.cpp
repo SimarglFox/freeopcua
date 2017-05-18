@@ -622,7 +622,7 @@ namespace OpcUa
           secureHeader.AddSize(RawSize(sequence));
           secureHeader.AddSize(RawSize(response));
 
-          for ( auto item : params.MonitoredItemIds)
+          for (auto item : params.MonitoredItemIds)
           {
             IOHandler->BeforeMonitorItemDeleted(SessionId.GetIntegerIdentifier(),
                                                 item);
