@@ -72,3 +72,5 @@ cmake_*
 CPack*
 CMakeLists.txt.user
 *.cbp
+
+CTestTestfile.cmake
