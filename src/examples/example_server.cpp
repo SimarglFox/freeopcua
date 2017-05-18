@@ -40,6 +40,7 @@ std::vector<OpcUa::Variant> MyMethod(NodeId context, std::vector<OpcUa::Variant>
 class Handler : public IOHandlerBase {
 public:
     Handler(const UaServer& server) : server(server) {}
+
     virtual bool BeforeAttributeWrite(int32_t sessionId,
             const OpcUa::NodeId& node,
             OpcUa::AttributeId attribute_id,
@@ -49,6 +50,24 @@ public:
 
         return true;
     }
+
+    virtual void AfterMonitorItemCreated(int32_t sessionId,
+                                     const OpcUa::NodeId& node,
+                                     OpcUa::AttributeId attribute_id,
+                                     uint32_t monitoredItemID) override
+     {
+
+        std::cout << "Subscribe to " << server.GetNode(node).GetBrowseName().Name <<
+                " monitorID " << monitoredItemID << std::endl;
+
+     }
+
+     virtual void BeforeMonitorItemDeleted(int32_t sessionId,
+                                           uint32_t monitoredItemID) override
+     {
+         std::cout << "Subscribe from monitorID " << monitoredItemID << std::endl;
+     }
+
 private:
     const UaServer& server;
 };

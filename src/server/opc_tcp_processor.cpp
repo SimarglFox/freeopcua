@@ -593,6 +593,14 @@ namespace OpcUa
           secureHeader.AddSize(RawSize(sequence));
           secureHeader.AddSize(RawSize(response));
 
+          for (int i = 0 ; i < params.ItemsToCreate.size(); i++)
+          {
+            IOHandler->AfterMonitorItemCreated(SessionId.GetIntegerIdentifier(),
+                                          params.ItemsToCreate.at(i).ItemToMonitor.NodeId,
+                                          params.ItemsToCreate.at(i).ItemToMonitor.AttributeId,
+                                          response.Results.at(i).MonitoredItemId);
+          }
+
           if (Debug) std::clog << "opc_tcp_processor| Sending response to Create Monitored Items Request." << std::endl;
           ostream << secureHeader << algorithmHeader << sequence << response << flush;
           return;
@@ -613,6 +621,12 @@ namespace OpcUa
           secureHeader.AddSize(RawSize(algorithmHeader));
           secureHeader.AddSize(RawSize(sequence));
           secureHeader.AddSize(RawSize(response));
+
+          for (auto item : params.MonitoredItemIds)
+          {
+            IOHandler->BeforeMonitorItemDeleted(SessionId.GetIntegerIdentifier(),
+                                                item);
+          }
 
           if (Debug) std::clog << "opc_tcp_processor| Sending response to Delete Monitored Items Request." << std::endl;
           ostream << secureHeader << algorithmHeader << sequence << response << flush;
