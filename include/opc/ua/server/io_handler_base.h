@@ -10,13 +10,15 @@ class IOHandlerBase
     {
     }
 
-    virtual void MonitorItemCreated(const OpcUa::Node& node,
-                                    int32_t attribute_id)
+    virtual void AfterMonitorItemCreated(int32_t sessionId,
+                                    const OpcUa::NodeId& node,
+                                    OpcUa::AttributeId attribute_id,
+                                    uint32_t monitoredItemID)
     {
     }
 
-    virtual void MonitorItemDeleted(const OpcUa::NodeId& node,
-                                    int32_t attribute_id)
+    virtual void BeforeMonitorItemDeleted(int32_t sessionId,
+                                          uint32_t monitoredItemID)
     {
     }
 
